@@ -60,7 +60,7 @@ export default defineConfig({
       [
         remarkWikiLink,
         {
-          hrefTemplate: (l: string) => `/${l}`,
+          hrefTemplate: (l: string) => `/posts/${l}`,
           aliasDivider: "|",
           // Default pageResolver converts spaces to underscores; spec §7.2 promises
           // `[[Other Post]] -> /other-post` (kebab-case), so override.
