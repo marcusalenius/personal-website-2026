@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #f8f7f4;
+  --color-text-heading: #1f232a;
+  --color-text-body: #4a4f57;
+  --color-text-muted: #8e939b;
+  --color-text-nav: #6e737b;
+  --color-line-divider: #dfddd6;
+  --color-line-nav-slash: #b4b8be;
+  --color-accent: #2f5a82;
+  --color-link-highlight: #c3cfde;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-heading: var(--color-text-heading);
+  --color-body: var(--color-text-body);
+  --color-muted: var(--color-text-muted);
+  --color-nav: var(--color-text-nav);
+  --color-divider: var(--color-line-divider);
+  --color-nav-slash: var(--color-line-nav-slash);
+  --color-accent: var(--color-accent);
+  --color-link-highlight: var(--color-link-highlight);
+
+  --font-sans: var(--font-nunito-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Typography tokens — `type-*` so they don't collide with `text-*` color utilities */
+
+@utility type-display {
+  font-size: 52px;
+  line-height: 1.18;
+  font-weight: 700;
+  font-style: normal;
+}
+
+@utility type-display-italic {
+  font-size: 52px;
+  line-height: 1.18;
+  font-weight: 700;
+  font-style: italic;
+}
+
+@utility type-section {
+  font-size: 52px;
+  line-height: 1.18;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-heading {
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-article-title {
+  font-size: 36px;
+  line-height: 1.25;
+  font-weight: 600;
+  font-style: normal;
+}
+
+@utility type-h2 {
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 600;
+  font-style: normal;
+}
+
+@utility type-title {
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 600;
+  font-style: normal;
+}
+
+@utility type-lede {
+  font-size: 19px;
+  line-height: 1.6;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-blockquote {
+  font-size: 18px;
+  line-height: 1.65;
+  font-weight: 400;
+  font-style: italic;
+}
+
+@utility type-body {
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-nav {
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-nav-active {
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 600;
+  font-style: normal;
+}
+
+@utility type-caption {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-excerpt {
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility type-role {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 400;
+  font-style: italic;
+}
+
+@utility type-meta {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  font-style: italic;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+}
