@@ -9,7 +9,9 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <Title />
+      <div className="mt-[110px]">
+        <Title />
+      </div>
       <div className="mt-[62px] type-body text-body space-y-[22px]">
         <MDXContent code={home.body} />
       </div>
