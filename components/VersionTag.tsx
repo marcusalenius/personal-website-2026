@@ -1,0 +1,29 @@
+import { MDLink } from "./MDLink";
+
+const REPO = "marcusalenius/personal-website-2026";
+
+// Captured at module load. In dev this is the process start; in CI builds the
+// env vars below are set, so this branch never runs in prod.
+const devDate = new Date()
+  .toISOString()
+  .slice(0, 10)
+  .replace(/-/g, ".");
+
+export function VersionTag() {
+  const sha = process.env.NEXT_PUBLIC_COMMIT_SHA;
+  const date = process.env.NEXT_PUBLIC_COMMIT_DATE;
+
+  const href = sha
+    ? `https://github.com/${REPO}/commit/${sha}`
+    : `https://github.com/${REPO}`;
+
+  const label = sha && date
+    ? `${sha} (${date})`
+    : `DEV (${devDate})`;
+
+  return (
+    <p>
+      <MDLink href={href}>{label}</MDLink>
+    </p>
+  );
+}
