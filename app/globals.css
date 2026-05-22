@@ -295,7 +295,7 @@ body {
   margin: 0;
 }
 
-/* Footnote landing flash (ref → definition and back). */
+/* Footnote landing flash (ref -> definition and back). */
 @keyframes footnote-flash {
   0% {
     background-color: var(--color-link-highlight);
