@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { posts } from "#site/content";
 import { Layout } from "@/components/Layout";
@@ -6,9 +7,27 @@ import { ArticleHeader } from "@/components/ArticleHeader";
 import { MDXContent } from "@/components/MDXContent";
 import { TableOfContents } from "@/components/TableOfContents";
 import { FootnoteScroll } from "@/components/FootnoteScroll";
+import { buildMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = posts.find((p) => p.slug === slug);
+  if (!post) return {};
+
+  return buildMetadata({
+    title: post.title,
+    description: post.lede,
+    path: `/posts/${post.slug}`,
+    image: post.image?.src,
+  });
 }
 
 export default async function PostPage({

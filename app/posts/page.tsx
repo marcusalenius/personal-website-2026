@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { posts } from "#site/content";
 import { Layout } from "@/components/Layout";
 import { Title } from "@/components/Title";
 import { formatMonthDay } from "@/lib/date";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Posts",
+  description: "Writing by Marcus Alenius.",
+  path: "/posts",
+});
 
 type Post = (typeof posts)[number];
 

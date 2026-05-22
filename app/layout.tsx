@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
+import { siteConfig } from "@/site.config";
 import "katex/dist/katex.min.css";
 import "./globals.css";
+
+const siteName = `${siteConfig.name.first} ${siteConfig.name.last}`;
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
@@ -12,8 +15,12 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Marcus Alenius",
-  description: "Personal site of Marcus Alenius.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteName,
+    template: `%s — ${siteName}`,
+  },
+  description: siteConfig.description,
 };
 
 export default function RootLayout({

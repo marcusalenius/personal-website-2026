@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { work } from "#site/content";
 import { Layout } from "@/components/Layout";
 import { Title } from "@/components/Title";
 import { formatMonthYear } from "@/lib/date";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Work",
+  description: "Roles and research Marcus Alenius has worked on.",
+  path: "/work",
+});
 
 export default function WorkPage() {
   const entries = [...work].sort(

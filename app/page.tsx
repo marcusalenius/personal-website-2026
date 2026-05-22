@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import { pages } from "#site/content";
 import { Layout } from "@/components/Layout";
 import { Title } from "@/components/Title";
 import { MDXContent } from "@/components/MDXContent";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({ path: "/" });
 
 export default function HomePage() {
   const home = pages.find((p) => p.slug === "home");
