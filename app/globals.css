@@ -150,8 +150,9 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Inline body links (MDLink, §5.4): SemiBold heading-color text with a faded-blue
-   highlighter bar (6px tall, y=9 in the tight 16px box), 1px overhang each side. */
+/* Inline body links: SemiBold heading-color text with a faded-blue
+   underline bar (6px tall, y=12 in the tight 16px box so it sits 2px below the
+   text bottom), 1px overhang each side. */
 .md-link {
   font-weight: 600;
   color: var(--color-text-heading);
@@ -163,7 +164,7 @@ body {
   );
   background-repeat: no-repeat;
   background-size: 100% 6px;
-  background-position: 0 9px;
+  background-position: 0 12px;
   padding-inline: 1px;
   margin-inline: -1px;
   -webkit-box-decoration-break: clone;
@@ -172,8 +173,12 @@ body {
 
 .md-link-arrow {
   display: inline-block;
+  width: 10px;
+  height: 10px;
   margin-left: 5px;
-  vertical-align: middle;
+  /* viewBox is cropped exactly to the path bounds, so the svg's bottom edge is
+     the arrow's actual bottom; baseline alignment lands it on the text baseline. */
+  vertical-align: baseline;
 }
 
 /* Article body — rendered MDX prose. */
