@@ -260,7 +260,7 @@ body {
 
 /* footnote markers — no highlighter bar, accent color */
 .article-body sup {
-  vertical-align: super;
+  /* vertical-align: 0.05em; */
   font-size: 0.75em;
   line-height: 0;
 }
@@ -273,12 +273,24 @@ body {
   color: var(--color-accent);
 }
 
+.article-body a[data-footnote-ref] {
+  margin-left: 0.15em;
+  font-weight: 700;
+}
+
+.footnote-backref-icon {
+  display: inline-block;
+  vertical-align: -0.1em;
+  margin-left: 0.3em;
+}
+
 /* footnotes section */
 .article-body .footnotes {
   margin-top: 56px;
   padding-top: 24px;
-  border-top: 1px solid var(--color-line-divider);
-  font-size: 15px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
 }
 
 .article-body .footnotes h2 {
@@ -294,12 +306,24 @@ body {
 }
 
 .article-body .footnotes ol {
-  padding-left: 1.25em;
-  list-style: decimal;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: footnote;
 }
 
+/* Mirror the sidenote layout: an accent number beside the body, no list marker. */
 .article-body .footnotes li {
-  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  counter-increment: footnote;
+}
+
+.article-body .footnotes li::before {
+  content: counter(footnote);
+  flex: none;
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
 .article-body .footnotes li p {
@@ -311,13 +335,16 @@ body {
   0% {
     background-color: var(--color-link-highlight);
   }
+  40% {
+    background-color: var(--color-link-highlight);
+  }
   100% {
     background-color: transparent;
   }
 }
 
 .footnote-flash {
-  animation: footnote-flash 1.5s ease-out;
+  animation: footnote-flash 1s ease-out;
   border-radius: 4px;
 }
 
@@ -339,6 +366,11 @@ body {
   line-height: 1.5;
   color: var(--color-text-muted);
   pointer-events: auto;
+  /* Padding gives the flash highlight breathing room; negative margins cancel it
+     out so the text stays aligned with its reference and keeps the 24px gutter. */
+  padding: 6px 8px;
+  margin: -6px -8px;
+  border-radius: 4px;
 }
 
 .sidenote-number {

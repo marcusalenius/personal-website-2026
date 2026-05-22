@@ -51,6 +51,7 @@ export function Sidenotes() {
 
         const note = document.createElement("aside");
         note.className = "sidenote";
+        note.dataset.refId = ref.id;
 
         const number = document.createElement("span");
         number.className = "sidenote-number";

@@ -2,6 +2,31 @@
 
 import { useEffect } from "react";
 
+// Flashes the target once it's actually in view. A smooth scroll to a distant
+// footnote takes time, so starting the animation on click would let it fade out
+// before the reader sees it. Fires immediately if already visible, otherwise
+// when the scroll brings it into the viewport.
+function flashWhenVisible(el: HTMLElement) {
+  const flash = () => {
+    el.classList.remove("footnote-flash");
+    void el.offsetWidth; // restart the animation
+    el.classList.add("footnote-flash");
+  };
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      if (entries[0]?.isIntersecting) {
+        obs.disconnect();
+        flash();
+      }
+    },
+    // Low threshold so any note size triggers; a tall note can never reach a
+    // high visible fraction and would otherwise never flash.
+    { threshold: 0.1 },
+  );
+  observer.observe(el);
+}
+
 // Smooth-scrolls footnote ref → definition and backref → ref, with a transient
 // flash on the landing target. remark-gfm prefixes ids with `user-content-`.
 export function FootnoteScroll() {
@@ -22,13 +47,27 @@ export function FootnoteScroll() {
       if (!dest) return;
 
       e.preventDefault();
-      // When footnotes render as sidenotes the bottom list is hidden, so there's
-      // nothing to scroll to — the note is already beside the reference.
-      if (dest.offsetParent === null) return;
-      dest.scrollIntoView({ behavior: "smooth", block: "center" });
-      dest.classList.remove("footnote-flash");
-      void dest.offsetWidth; // restart the animation
-      dest.classList.add("footnote-flash");
+
+      // When footnotes render as sidenotes the bottom list is hidden. The note
+      // can stack below its reference, so flash the matching sidenote (and only
+      // scroll if it's off-screen) to point the reader to it.
+      let landing: HTMLElement = dest;
+      if (dest.offsetParent === null) {
+        const sidenote = document.querySelector<HTMLElement>(
+          `.sidenote[data-ref-id="${CSS.escape(anchor.id)}"]`,
+        );
+        if (!sidenote) return;
+        landing = sidenote;
+        const rect = sidenote.getBoundingClientRect();
+        const offscreen = rect.top < 0 || rect.bottom > window.innerHeight;
+        if (offscreen) {
+          sidenote.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      } else {
+        dest.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      flashWhenVisible(landing);
     };
 
     root.addEventListener("click", onClick);

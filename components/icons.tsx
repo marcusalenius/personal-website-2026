@@ -55,4 +55,16 @@ export const ArrowLeftIcon = croppedIcon(
   "32 48 192 160",
 );
 
+// Bold weight — trails external body links.
+export const ArrowUpRightIcon = croppedIcon(
+  "M204,64V168a12,12,0,0,1-24,0V93L72.49,200.49a12,12,0,0,1-17-17L163,76H88a12,12,0,0,1,0-24H192A12,12,0,0,1,204,64Z",
+  "52 52 152 152",
+);
+
+// Bold weight — used for footnote backrefs.
+export const ArrowUDownLeftIcon = croppedIcon(
+  "M236,112a68.07,68.07,0,0,1-68,68H61l27.52,27.51a12,12,0,0,1-17,17l-48-48a12,12,0,0,1,0-17l48-48a12,12,0,1,1,17,17L61,156H168a44,44,0,0,0,0-88H80a12,12,0,0,1,0-24h88A68.07,68.07,0,0,1,236,112Z",
+  "19.99 44 216.01 184.03",
+);
+
 export type IconComponent = typeof PaperPlaneTiltIcon;
