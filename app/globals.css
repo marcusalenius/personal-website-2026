@@ -199,6 +199,11 @@ body {
   color: var(--color-text-heading);
 }
 
+/* Leave breathing room above a heading when scrolled to from the TOC. */
+.article-body :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 24px;
+}
+
 .article-body > * + h2 {
   margin-top: 48px;
 }
@@ -315,12 +320,12 @@ body {
   border-radius: 4px;
 }
 
-/* Table of contents — sticky in the left gutter beside the 680px column. */
+/* Table of contents — sticky in the left gutter beside the 600px column. */
 .toc {
   position: fixed;
   top: 170px;
-  right: calc(50% + 372px);
-  width: 200px;
+  right: calc(50% + 324px);
+  width: 180px;
   max-height: calc(100vh - 200px);
   overflow-y: auto;
 }
@@ -339,7 +344,7 @@ body {
 }
 
 /* Hide the TOC when the gutter can't hold it (column + gap + TOC width). */
-@media (max-width: 1180px) {
+@media (max-width: 1040px) {
   .toc {
     display: none;
   }

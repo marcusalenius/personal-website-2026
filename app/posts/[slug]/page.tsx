@@ -40,7 +40,7 @@ export default async function PostPage({
   if (!post) notFound();
 
   return (
-    <Layout>
+    <Layout width="narrow">
       <div className="mt-[72px]">
         <BackLink href="/posts">back to posts</BackLink>
       </div>

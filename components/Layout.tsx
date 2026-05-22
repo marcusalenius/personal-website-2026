@@ -3,11 +3,19 @@ import { Footer } from "./Footer";
 
 type LayoutProps = {
   children: React.ReactNode;
+  width?: "default" | "narrow";
 };
 
-export function Layout({ children }: LayoutProps) {
+const widthClass = {
+  default: "w-[min(680px,100%_-_48px)]",
+  narrow: "w-[min(600px,100%_-_48px)]",
+};
+
+export function Layout({ children, width = "default" }: LayoutProps) {
   return (
-    <div className="mx-auto flex min-h-screen w-[min(680px,100%_-_48px)] flex-col pt-[32px] pb-[48px] sm:pt-[36px]">
+    <div
+      className={`mx-auto flex min-h-screen ${widthClass[width]} flex-col pt-[32px] pb-[48px] sm:pt-[36px]`}
+    >
       <Nav />
       <main className="flex-1">{children}</main>
       {/* mt enforces a minimum gap to content; flex-1 main adds more when the

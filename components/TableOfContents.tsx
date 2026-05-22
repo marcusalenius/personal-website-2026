@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Heading = { id: string; html: string; level: number };
 
@@ -26,6 +26,10 @@ function readHeadings(maxLevel: number): Heading[] {
 export function TableOfContents({ maxLevel }: { maxLevel: number }) {
   const [items, setItems] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
+  // While a click-triggered smooth scroll is in flight, the clicked heading may
+  // not reach the active line (e.g. the last heading near page bottom), so we
+  // pin its selection and suppress scroll-driven recomputes until it settles.
+  const clickLockRef = useRef(false);
 
   useEffect(() => {
     const headings = readHeadings(maxLevel);
@@ -41,6 +45,7 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
     // top. Recomputed whenever a heading crosses that line (gapless across long
     // sections, unlike picking only headings currently inside a narrow band).
     const computeActive = () => {
+      if (clickLockRef.current) return;
       const line = window.innerHeight * 0.15;
       let current = first.id;
       for (const el of els) {
@@ -57,6 +62,26 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
     return () => observer.disconnect();
   }, [maxLevel]);
 
+  const handleClick = (e: React.MouseEvent, id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+
+    setActiveId(id);
+    clickLockRef.current = true;
+
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    history.pushState(null, "", `#${id}`);
+
+    const release = () => {
+      clickLockRef.current = false;
+      window.removeEventListener("scrollend", release);
+    };
+    window.addEventListener("scrollend", release);
+    // Fallback for browsers without the scrollend event.
+    setTimeout(release, 700);
+  };
+
   if (items.length === 0) return null;
 
   return (
@@ -66,6 +91,7 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
           <li key={h.id} style={{ paddingLeft: (h.level - 2) * 12 }}>
             <a
               href={`#${h.id}`}
+              onClick={(e) => handleClick(e, h.id)}
               className={`toc-link${h.id === activeId ? " toc-link-active" : ""}`}
               dangerouslySetInnerHTML={{ __html: h.html }}
             />
