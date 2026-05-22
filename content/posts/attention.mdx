@@ -6,6 +6,8 @@ maxTocLevel: 2
 slug: attention
 ---
 
+<Figure src="/images/placeholder.png" alt="" />
+
 ## The problem
 
 Language models predict the next token from a sequence of previous tokens. Until 2017, this was usually done with recurrent networks[^rnn], which struggled with long-range dependencies — the further apart two tokens were, the harder it was to relate them.
@@ -16,7 +18,7 @@ The attention mechanism solves this elegantly: every token can look at every oth
 
 ## Scaled dot-product attention
 
-Given queries $Q$, keys $K$, and values $V$, the attention output is:
+Given queries Q$Q$, keys $K$, and values $V$, the attention output is:
 
 $$
 \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{Q K^\top}{\sqrt{d_k}}\right) V
@@ -30,7 +32,7 @@ Without the scaling factor, large dot products push the softmax into regions wit
 
 > Attention is not just an architectural detail — it's the central inductive bias of the transformer.
 
-## Implementation sketch
+## A very long heading down here to test out the limits of the toc okay
 
 A few lines of PyTorch capture the whole idea:
 
@@ -43,7 +45,7 @@ def attention(q, k, v):
     return F.softmax(scores, dim=-1) @ v
 ```
 
-<Figure src="/images/attention-heatmap.png" alt="Heatmap of attention weights between tokens in a short sentence.">
+<Figure src="/images/placeholder.png" alt="Heatmap of attention weights between tokens in a short sentence.">
   <Caption>Attention weights for the sentence "the cat sat on the mat".</Caption>
 </Figure>
 
