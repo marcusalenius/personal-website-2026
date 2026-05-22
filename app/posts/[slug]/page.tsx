@@ -4,6 +4,8 @@ import { Layout } from "@/components/Layout";
 import { BackLink } from "@/components/BackLink";
 import { ArticleHeader } from "@/components/ArticleHeader";
 import { MDXContent } from "@/components/MDXContent";
+import { TableOfContents } from "@/components/TableOfContents";
+import { FootnoteScroll } from "@/components/FootnoteScroll";
 
 export function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
@@ -35,6 +37,10 @@ export default async function PostPage({
       <div className="article-body mt-[40px]">
         <MDXContent code={post.body} />
       </div>
+      {post.maxTocLevel ? (
+        <TableOfContents maxLevel={post.maxTocLevel} />
+      ) : null}
+      <FootnoteScroll />
     </Layout>
   );
 }

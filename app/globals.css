@@ -294,3 +294,48 @@ body {
 .article-body .footnotes li p {
   margin: 0;
 }
+
+/* Footnote landing flash (ref → definition and back). */
+@keyframes footnote-flash {
+  0% {
+    background-color: var(--color-link-highlight);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.footnote-flash {
+  animation: footnote-flash 1.5s ease-out;
+  border-radius: 4px;
+}
+
+/* Table of contents — sticky in the right gutter beside the 680px column. */
+.toc {
+  position: fixed;
+  top: 140px;
+  left: calc(50% + 372px);
+  width: 200px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.toc-link {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.toc-link-active {
+  color: var(--color-accent);
+}
+
+/* Hide the TOC when the gutter can't hold it (column + gap + TOC width). */
+@media (max-width: 1180px) {
+  .toc {
+    display: none;
+  }
+}
