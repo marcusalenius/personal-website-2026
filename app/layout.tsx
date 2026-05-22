@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Nunito_Sans } from "next/font/google";
+import { Nunito_Sans, Inconsolata } from "next/font/google";
 import { siteConfig } from "@/site.config";
 import "katex/dist/katex.min.css";
 import "./globals.css";
@@ -11,6 +11,13 @@ const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
   weight: ["400", "600", "700"],
   style: ["normal", "italic"],
+  display: "swap",
+});
+
+const inconsolata = Inconsolata({
+  subsets: ["latin"],
+  variable: "--font-inconsolata",
+  weight: ["400", "600"],
   display: "swap",
 });
 
@@ -29,7 +36,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={nunitoSans.variable}>
+    <html
+      lang="en"
+      className={`${nunitoSans.variable} ${inconsolata.variable}`}
+    >
       <body className="bg-bg text-body type-body">{children}</body>
     </html>
   );

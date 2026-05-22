@@ -24,6 +24,8 @@
   --color-link-highlight: var(--color-link-highlight);
 
   --font-sans: var(--font-nunito-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-inconsolata), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
 }
 
 /* Typography tokens — `type-*` so they don't collide with `text-*` color utilities */
@@ -200,6 +202,13 @@ body {
   color: var(--color-text-heading);
 }
 
+.article-body h3 {
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
 /* Leave breathing room above a heading when scrolled to from the TOC. */
 .article-body :is(h2, h3, h4, h5, h6) {
   scroll-margin-top: 24px;
@@ -207,6 +216,10 @@ body {
 
 .article-body > * + h2 {
   margin-top: 48px;
+}
+
+.article-body > * + h3 {
+  margin-top: 24px;
 }
 
 /* image figures (not rehype-pretty-code's <figure> wrapper) */
@@ -223,12 +236,13 @@ body {
 
 .article-body figure[data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 16px 18px;
   border: 1px solid var(--color-line-divider);
   background-color: var(--shiki-light-bg, #fff);
-  font-size: 14px;
-  line-height: 1.6;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  line-height: 1.25;
 }
 
 .article-body pre code {
@@ -240,8 +254,10 @@ body {
 }
 
 .article-body :not(pre) > code {
-  font-size: 0.9em;
-  padding: 0.1em 0.35em;
+  font-family: var(--font-mono);
+  font-size: 1em;
+  color: var(--color-text-heading);
+  padding: 0.09em 0.25em;
   border-radius: 4px;
   background: rgba(31, 35, 42, 0.06);
 }
