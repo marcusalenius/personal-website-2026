@@ -13,10 +13,10 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <div className="mt-[110px]">
+      <div className="mt-[76px] sm:mt-[110px]">
         <Title />
       </div>
-      <div className="mt-[62px] type-body text-body space-y-[22px]">
+      <div className="mt-[48px] type-body text-body space-y-[22px] sm:mt-[62px]">
         <MDXContent code={home.body} />
       </div>
     </Layout>

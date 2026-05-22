@@ -3,7 +3,7 @@ import { siteConfig } from "@/site.config";
 export function Footer() {
   return (
     <footer className="border-t border-divider pt-[26px]">
-      <ul className="flex flex-wrap justify-center gap-x-[28px] gap-y-[12px]">
+      <ul className="flex flex-wrap justify-center gap-x-[28px] gap-y-[8px]">
         {siteConfig.contacts.map((contact) => {
           const Icon = contact.icon;
           return (

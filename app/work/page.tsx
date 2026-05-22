@@ -18,10 +18,10 @@ export default function WorkPage() {
 
   return (
     <Layout>
-      <div className="mt-[95px]">
+      <div className="mt-[64px] sm:mt-[95px]">
         <Title subhead="/work" />
       </div>
-      <ul className="mt-[78px] flex flex-col gap-[30px]">
+      <ul className="mt-[56px] flex flex-col gap-[30px] sm:mt-[78px]">
         {entries.map((entry) => (
           <li
             key={`${entry.organization}-${entry.start}`}

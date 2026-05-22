@@ -7,7 +7,7 @@ type LayoutProps = {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[680px] flex-col px-4 pt-[36px] pb-[48px] sm:px-0">
+    <div className="mx-auto flex min-h-screen w-[min(680px,100%_-_48px)] flex-col pt-[32px] pb-[48px] sm:pt-[36px]">
       <Nav />
       <main className="flex-1">{children}</main>
       <Footer />
