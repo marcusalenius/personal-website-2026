@@ -20,6 +20,10 @@ const posts = defineCollection({
     maxTocLevel: s.number().int().min(1).max(6).optional(),
     slug: s.slug("posts"),
     body: s.mdx(),
+    // Derived (not authored): word count drives reading-time fallback (§7.3),
+    // toc feeds the TableOfContents sidebar (M9).
+    metadata: s.metadata(),
+    toc: s.toc(),
   }),
 });
 

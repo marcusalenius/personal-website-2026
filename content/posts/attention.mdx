@@ -24,13 +24,13 @@ $$
 
 where $d_k$ is the dimensionality of the keys.
 
-### Why scale by $\sqrt{d_k}$?
+## Why scale by $\sqrt{d_k}$?
 
 Without the scaling factor, large dot products push the softmax into regions with vanishingly small gradients — training stalls.
 
 > Attention is not just an architectural detail — it's the central inductive bias of the transformer.
 
-### Implementation sketch
+## Implementation sketch
 
 A few lines of PyTorch capture the whole idea:
 

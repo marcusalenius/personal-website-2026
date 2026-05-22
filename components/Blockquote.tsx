@@ -1,9 +1,11 @@
-// Stub — full impl in M8 (left accent bar, blockquote token italic, 24px gap).
-
 type BlockquoteProps = {
   children?: React.ReactNode;
 };
 
 export function Blockquote({ children }: BlockquoteProps) {
-  return <blockquote>{children}</blockquote>;
+  return (
+    <blockquote className="border-l-[3px] border-accent pl-[24px] type-blockquote text-heading">
+      {children}
+    </blockquote>
+  );
 }
