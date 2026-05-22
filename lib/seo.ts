@@ -10,6 +10,12 @@ type BuildMetadata = {
   image?: string;
 };
 
+// Match `trailingSlash: true` so canonical URLs point at the exported path.
+function withTrailingSlash(path: string): string {
+  if (path === "/") return path;
+  return path.endsWith("/") ? path : `${path}/`;
+}
+
 export function buildMetadata({
   title,
   description = siteConfig.description,
@@ -17,19 +23,20 @@ export function buildMetadata({
   image = siteConfig.ogImage,
 }: BuildMetadata): Metadata {
   const fullTitle = title ? `${title} — ${siteName}` : siteName;
+  const canonical = withTrailingSlash(path);
 
   return {
     // Omit `title` entirely when not provided so the layout's default applies;
     // setting `title: undefined` would suppress the default instead.
     ...(title ? { title } : {}),
     description,
-    alternates: { canonical: path },
+    alternates: { canonical },
     openGraph: {
       type: "website",
       siteName,
       title: fullTitle,
       description,
-      url: path,
+      url: canonical,
       images: [{ url: image }],
     },
     twitter: {
