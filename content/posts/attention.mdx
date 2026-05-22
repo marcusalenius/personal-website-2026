@@ -10,9 +10,10 @@ slug: attention
 
 ## The problem
 
-Language models predict the next token from a sequence of previous tokens. Until 2017, this was usually done with recurrent networks[^rnn], which struggled with long-range dependencies — the further apart two tokens were, the harder it was to relate them.
+Language models predict the next token from a sequence of previous tokens. Until 2017, this was usually done with recurrent networks[^rnn], which struggled with long-range dependencies[^foo] — the further apart two tokens were, the harder it was to relate them.
 
 [^rnn]: See Mikolov et al. (2010) for an early treatment of RNN-based language models.
+[^foo]: Another footnote.
 
 The attention mechanism solves this elegantly: every token can look at every other token in one step.
 

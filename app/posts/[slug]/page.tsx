@@ -7,6 +7,7 @@ import { ArticleHeader } from "@/components/ArticleHeader";
 import { MDXContent } from "@/components/MDXContent";
 import { TableOfContents } from "@/components/TableOfContents";
 import { FootnoteScroll } from "@/components/FootnoteScroll";
+import { Sidenotes } from "@/components/Sidenotes";
 import { buildMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -60,6 +61,7 @@ export default async function PostPage({
         <TableOfContents maxLevel={post.maxTocLevel} />
       ) : null}
       <FootnoteScroll />
+      <Sidenotes />
     </Layout>
   );
 }

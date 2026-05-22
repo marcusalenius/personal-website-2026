@@ -183,6 +183,7 @@ body {
 
 /* Article body — rendered MDX prose. */
 .article-body {
+  position: relative;
   font-size: 16px;
   line-height: 1.65;
   color: var(--color-text-body);
@@ -318,6 +319,41 @@ body {
 .footnote-flash {
   animation: footnote-flash 1.5s ease-out;
   border-radius: 4px;
+}
+
+/* Footnotes as right-margin sidenotes (mirrors the TOC gutter: 180px wide,
+   24px from the column). Positioned by JS to align with each reference. */
+.sidenotes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sidenote {
+  position: absolute;
+  left: calc(100% + 24px);
+  width: 180px;
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  pointer-events: auto;
+}
+
+.sidenote-number {
+  flex: none;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.sidenote-body p {
+  margin: 0;
+}
+
+/* When sidenotes are shown, suppress the bottom footnotes list. */
+.article-body.has-sidenotes .footnotes {
+  display: none;
 }
 
 /* Table of contents — sticky in the left gutter beside the 600px column. */

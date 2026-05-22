@@ -22,6 +22,9 @@ export function FootnoteScroll() {
       if (!dest) return;
 
       e.preventDefault();
+      // When footnotes render as sidenotes the bottom list is hidden, so there's
+      // nothing to scroll to — the note is already beside the reference.
+      if (dest.offsetParent === null) return;
       dest.scrollIntoView({ behavior: "smooth", block: "center" });
       dest.classList.remove("footnote-flash");
       void dest.offsetWidth; // restart the animation
