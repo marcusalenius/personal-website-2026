@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon } from "@/components/icons";
 
 type BackLinkProps = {
   href: string;
@@ -12,7 +12,7 @@ export function BackLink({ href, children }: BackLinkProps) {
       href={href}
       className="inline-flex items-center gap-[8px] type-caption text-muted"
     >
-      <ArrowLeftIcon size={12} aria-hidden />
+      <ArrowLeftIcon size={12} />
       <span>{children}</span>
     </Link>
   );

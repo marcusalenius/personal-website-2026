@@ -15,7 +15,7 @@ export function Footer() {
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
               >
-                <Icon size={15} aria-hidden />
+                <Icon size={15} />
                 <span>{contact.label}</span>
               </a>
             </li>

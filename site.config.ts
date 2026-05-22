@@ -2,14 +2,14 @@ import {
   PaperPlaneTiltIcon,
   GithubLogoIcon,
   LinkedinLogoIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import type { Icon } from "@phosphor-icons/react";
+  type IconComponent,
+} from "@/components/icons";
 
 type Contact = {
   kind: "email" | "github" | "linkedin";
   label: string;
   href: string;
-  icon: Icon;
+  icon: IconComponent;
 };
 
 export const siteConfig = {
