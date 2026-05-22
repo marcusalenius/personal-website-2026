@@ -45,15 +45,13 @@ export default function PostsPage() {
                 <div className="w-[95px] shrink-0 type-meta text-accent">
                   {formatMonthDay(post.date)}
                 </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-[9px]">
-                  <Link
-                    href={`/posts/${post.slug}`}
-                    className="type-title text-heading"
-                  >
-                    {post.title}
-                  </Link>
-                  <p className="type-excerpt text-body">{post.lede}</p>
-                </div>
+                <Link
+                  href={`/posts/${post.slug}`}
+                  className="flex min-w-0 flex-1 flex-col gap-[9px]"
+                >
+                  <span className="type-title text-heading">{post.title}</span>
+                  <span className="type-excerpt text-body">{post.lede}</span>
+                </Link>
               </article>
             ))}
           </section>
