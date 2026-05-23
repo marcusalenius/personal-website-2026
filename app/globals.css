@@ -262,6 +262,58 @@ body {
   background: rgba(31, 35, 42, 0.06);
 }
 
+/* lists — Tailwind preflight strips markers/padding, so restore them */
+.article-body ol,
+.article-body ul {
+  padding-left: 1.8em;
+}
+
+.article-body ol {
+  list-style: decimal;
+}
+
+.article-body ul {
+  list-style: disc;
+}
+
+/* distinct bullets per nesting level (matches browser defaults, which our
+   explicit list-style above would otherwise flatten to disc everywhere) */
+.article-body ul ul {
+  list-style: circle;
+}
+
+.article-body ul ul ul {
+  list-style: square;
+}
+
+/* gap between the marker and the text (list-style is `outside`, so li padding
+   pushes the text away from the marker) */
+.article-body li {
+  padding-left: 8px;
+}
+
+.article-body li + li {
+  margin-top: 8px;
+}
+
+/* Compact list spacing for dense reference sections (e.g. the appendix).
+   Authored with a `:::tight … :::` directive, which compiles to <div class="tight">.
+   The first rule restores block spacing lost by nesting in a div (the global rule
+   uses a direct-child combinator); the rest tighten the lists. */
+.article-body .tight > * + * {
+  margin-top: 14px;
+}
+
+.article-body .tight :is(ul, ol),
+.article-body .tight li + li,
+.article-body .tight li :is(ul, ol) {
+  margin-top: 3px;
+}
+
+.article-body .tight li:first-child {
+  margin-top: 4px;
+}
+
 /* math — match body text size more (KaTeX defaults to 1.21em) */
 .article-body .katex {
   font-size: 1.05em;
@@ -332,6 +384,7 @@ body {
   display: flex;
   gap: 10px;
   margin-top: 12px;
+  padding-left: 0;
   counter-increment: footnote;
 }
 

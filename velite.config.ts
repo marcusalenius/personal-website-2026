@@ -3,9 +3,23 @@ import remarkGfm from "remark-gfm";
 import remarkSmartypants from "remark-smartypants";
 import remarkMath from "remark-math";
 import remarkWikiLink from "remark-wiki-link";
+import remarkDirective from "remark-directive";
 import rehypeSlug from "rehype-slug";
 import rehypeKatex from "rehype-katex";
 import rehypePrettyCode from "rehype-pretty-code";
+import { visit } from "unist-util-visit";
+
+// Render container directives (`:::name … :::`) as `<div class="name">` so posts
+// can mark up custom blocks (e.g. `:::tight` for compact lists) without raw HTML.
+function remarkDirectiveToDiv() {
+  return (tree: import("mdast").Root) => {
+    visit(tree, "containerDirective", (node) => {
+      const data = node.data ?? (node.data = {});
+      data.hName = "div";
+      data.hProperties = { className: [node.name] };
+    });
+  };
+}
 
 const posts = defineCollection({
   name: "Post",
@@ -61,6 +75,8 @@ export default defineConfig({
       remarkGfm,
       remarkSmartypants,
       remarkMath,
+      remarkDirective,
+      remarkDirectiveToDiv,
       [
         remarkWikiLink,
         {
