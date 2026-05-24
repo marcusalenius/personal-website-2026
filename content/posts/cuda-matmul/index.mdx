@@ -1,0 +1,377 @@
+---
+title: "CUDA Matmul"
+lede: "Foo."
+date: 2026-01-01
+maxTocLevel: 2
+slug: cuda-matmul
+---
+
+## Kernel 1 — Naive
+
+### Implementation
+
+For our first kernel, we'll assign each thread to a unique entry in the output matrix `C`. That thread will compute the dot product of the corresponding row of `A` and column of `B`, and write the result to `C`. 
+
+We launch the kernel like this.
+
+```cpp
+// e.g. 32x32 threads per block (i.e. blockDim.x = blockDim.y = 32)
+dim3 block(32, 32);
+// create as many blocks as necessary to map all of C
+// (i.e. gridDim.x = N/32, gridDim.y = M/32
+dim3 grid(CEIL_DIV(N, 32), CEIL_DIV(M, 32));
+// launch the asynchronous execution of the kernel on the device
+// the function call returns immediately on the host
+sgemm_naive<<<grid, block>>>(M, N, K, alpha, beta, A, B, C);
+```
+
+The kernel itself looks like this.
+
+```cpp
+__global__ void sgemm_naive(
+  int M, int N, int K, float alpha, float beta,
+  const float* __restrict__ A, 
+  const float* __restrict__ B,
+  float* __restrict__ C
+) {
+  // compute position in C that this thread is responsible for
+  const int globalRow = blockIdx.y * blockDim.y + threadIdx.y;
+  const int globalCol = blockIdx.x * blockDim.x + threadIdx.x;
+
+  if (globalRow < M && globalCol < N) {
+    float acc = 0.0f;
+    for (int k = 0; k < K; ++k) {
+      // recall: A (MxK) and B (KxN)
+      // acc += A[globalRow, k] * B[k, globalCol]
+      acc += A[globalRow * K + k] * B[k * N + globalCol];
+    }
+    // C = alpha * (A @ B) + beta * C
+    // C[globalRow, globalCol]
+    C[globalRow * N + globalCol] = 
+      alpha * acc + beta * C[globalRow * N + globalCol];
+  }
+}
+```
+
+Note that if the size of the matrix is not divisible by the size of the block, we'll have to launch extra blocks to process the remainder. This is called [tile quantization](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#tile-quant). This is why we have the boundary check `if (globalRow < M && globalCol < N)` in the kernel.
+
+### Performance
+
+## Kernel 2 — Global Memory Coalescing
+
+### Implementation
+
+For execution, the threads of a block are grouped into warps, consisting of 32 threads. The grouping into warps happens based on a consecutive `threadId`, which is calculated as `threadId = threadIdx.x + blockDim.x * threadIdx.y`. Threads with neighboring `threadId` become part of the same warp.
+
+Contiguous memory accesses by threads that are part of the same warp can be grouped and executed as one. This is referred to as global memory coalescing.
+
+Global memory coalescing is only possible if the floats loaded are consecutive in memory, and if access is aligned. If they aren't, then the GPU will execute as many 32B loads (the smallest load size — with the other options being 64B and 128B) as necessary to fetch all floats, leading to a lot of wasted bandwidth.
+
+Fortunately, our naive kernel already supports global memory coalescing. Why? Because it choses the warp-contiguous index — `threadIdx.x` — to be the contiguous memory dimension of `B` and `C` — the column. 
+
+```cpp
+// compute position in C that this thread is responsible for
+const int globalRow = blockIdx.y * blockDim.y + threadIdx.y;
+const int globalCol = blockIdx.x * blockDim.x + threadIdx.x;
+```
+
+If we had instead chosen `threadIdx.y` to be the contiguous memory dimension of `B` and `C`, we would not have had global memory coalescing.
+
+```cpp
+// compute position in C that this thread is responsible for
+const int globalRow = blockIdx.x * blockDim.x + threadIdx.x;
+const int globalCol = blockIdx.y * blockDim.y + threadIdx.y;
+```
+
+### Performance
+
+TALK ABOUT MEMORY HIERARCHY
+
+
+## Kernel 3 — Blocktiling
+
+### Implementation
+
+Each SM has one shared memory (SMEM). As the shared memory is located on-chip, it has a much lower latency and higher bandwidth than global memory. For Volta (released in 2017) the benchmarks performed in [this paper](https://arxiv.org/abs/1804.06826) report 750 GiB/s of global memory bandwidth, and 12,080 GiB/s of shared memory bandwidth.
+
+For this kernel, we'll load a tile of `A` and a tile of `B` from global memory into shared memory. Then we'll perform as much work as possible on the two tiles, with each thread still being assigned one entry of `C`. We'll slide the tiles along the columns of `A` and the rows of `B` computing partial sums in `C` until we have have the full result.
+
+We start by setting up the blocktiling parameters along with arrays for the shared memory tiles. Then we start our loop sliding the tiles over the `K` dimension.
+
+Note that for simplicity for this kernel, we assume square tiles and that the block dimensions equal the tile dimensions (`blockDim.x == blockDim.y == BM == BN == BK`). This way, each thread can load exactly one element of `A` and one element of `B` per tile. In the next kernel, we'll relax these assumptions.
+
+```cpp
+#define BM ...  // block tile height in M (rows of C per block)
+#define BN ...  // block tile width in N (cols of C per block)
+#define BK ...  // block tile width in K
+
+// assumes: blockDim.x == blockDim.y == BM == BN == BK (for now)
+
+__global__ void sgemm_blocktiling(
+  int M, int N, int K, float alpha, float beta,
+  const float* __restrict__ A, 
+  const float* __restrict__ B,
+  float* __restrict__ C
+) {
+  // block indices
+  const int blockRow = blockIdx.y;
+  const int blockCol = blockIdx.x;
+  
+  // thread indices
+  const int threadRow = threadIdx.y;  // 0 .. (BM)-1
+  const int threadCol = threadIdx.x;  // 0 .. (BN)-1
+
+  // global output coordinates in C
+  const int globalRow = blockRow * BM + threadRow;
+  const int globalCol = blockCol * BN + threadCol;
+
+  // shared memory tiles
+  __shared__ float As[BM][BK];
+  __shared__ float Bs[BK][BN];
+
+  float acc = 0.0f;
+
+  // slide over K
+  for (int bk = 0; bk < K; bk += BK) {
+    ...
+```
+
+For each iteration of the `bk`-loop (that is for each tile), we do the steps outlined below.
+
+First, each block loads a tile of `A` and `B` from global memory into shared memory `As[BM][BK]` and `Bs[BK][BN]`.
+
+```cpp
+    // load A tile
+    const int aRow = globalRow;
+    const int aCol = bk + threadCol;
+    As[threadRow][threadCol] =
+      (aRow < M && aCol < K) ? A[aRow * K + aCol] : 0.0f;
+    
+    // load B tile
+    const int bRow = bk + threadRow;
+    const int bCol = globalCol;
+    Bs[threadRow][threadCol] =
+      (bRow < K && bCol < N) ? B[bRow * N + bCol] : 0.0f;
+```
+
+The threads in this block cooperatively load the block's entire tile of `A` and `B` into shared memory. Each thread loads one element from `A` into `As` and one element from `B` into `Bs`.
+
+Next, each thread computes the result for its entry in `C` using the data in shared memory. This is a loop over the `BK` dimension of the tiles, multiplying the corresponding elements from `As` and `Bs` and accumulating the result in `acc`.
+
+```cpp
+    __syncthreads();
+
+    // compute
+    #pragma unroll
+    for (int k = 0; k < BK; ++k) {
+      acc += As[threadRow][k] * Bs[k][threadCol];
+    }
+
+    __syncthreads();
+```
+
+There are two things to note in this code snippet. First, we have a `__syncthreads()` before and after the compute. The one before is necessary to ensure that all threads have loaded the data they are responsible for into shared memory, and the one after to ensure that no thread begins loading the next tile before all threads have finished computing the results for the current tile.
+
+Second, we use `#pragma unroll` to ask the compiler to unroll the `k`-loop — that is to replace the loop with repeated straight-line code. Because `BK` is a compile-time constant, the compiler can unroll the loop completely. For example, say we have `BK == 4`. Then the compiler can replace the loop with this code.
+
+```cpp
+acc += As[threadRow][0] * Bs[0][threadCol];
+acc += As[threadRow][1] * Bs[1][threadCol];
+acc += As[threadRow][2] * Bs[2][threadCol];
+acc += As[threadRow][3] * Bs[3][threadCol];
+```
+
+Unrolling the loop removes the loop overhead (`++k`, `k < BK`, and branching), and can also enable other optimizations. 
+
+We now have the result that the thread has computed in `acc`. We just have to write the value to C.
+
+```cpp
+  // write results
+  if (globalRow < M && globalCol < N) {
+    const int idx = globalRow * N + globalCol;
+    C[idx] = alpha * acc + beta * C[idx];
+  }
+}
+```
+
+### Performance
+
+## Kernel 5 — Blocktiling and 2D Threadtiling
+
+### Implementation
+
+We start by setting up the block- and threadtiling parameters along with arrays for the shared memory tiles and the register accumulators. Then we start our loop sliding over the `K` dimension.
+
+```cpp
+#define BM ...  // block tile height in M (rows of C per block)
+#define BN ...  // block tile width in N (cols of C per block)
+#define BK ...  // block tile width in K
+#define TM ...  // thread tile height in M (rows of C per thread)
+#define TN ...  // thread tile width in N (cols of C per thread)
+
+// assumes:
+//   - blockDim.y == BM / TM
+//   - blockDim.x == BN / TN
+
+__global__ void sgemm_blocktiling_2dthreadtiling(
+  int M, int N, int K, float alpha, float beta,
+  const float* __restrict__ A, 
+  const float* __restrict__ B,
+  float* __restrict__ C
+) {
+  // block indices
+  const int blockRow = blockIdx.y;
+  const int blockCol = blockIdx.x;
+  
+  // thread indices
+  const int threadCol = threadIdx.x;  // 0 .. (BN/TN)-1
+  const int threadRow = threadIdx.y;  // 0 .. (BM/TM)-1
+  
+  // global output coordinates in C
+  const int globalColBase = blockCol * BN + threadCol * TN;
+  const int globalRowBase = blockRow * BM + threadRow * TM;
+  
+  // shared memory tiles
+  __shared__ float As[BM][BK];
+  __shared__ float Bs[BK][BN];
+  
+  // register accumulators (TM x TN per thread)
+  float acc[TM][TN];
+  #pragma unroll
+  for (int r = 0; r < TM; ++r) {
+    #pragma unroll
+    for (int c = 0; c < TN; ++c) {
+      acc[r][c] = 0.0f;
+    }
+  }
+  
+  // register cache for (a part of) col of A and row of B
+  float aReg[TM];
+  float bReg[TN];
+  
+  // slide over K
+  for (int bk = 0; bk < K; bk += BK) {
+    ...  
+```
+
+For each iteration of the `bk`-loop, we do the steps outlined below.
+
+First, each block loads a tile of `A` and `B` from global memory into shared memory `As[BM][BK]` and `Bs[BK][BN]`.
+
+```cpp
+    // load A tile
+    for (int kCol = threadCol; kCol < BK; kCol += blockDim.x) {
+      const int aCol = bk + kCol;
+      #pragma unroll
+      for (int r = 0; r < TM; ++r) {
+        const int aRow = globalRowBase + r;
+        As[threadRow * TM + r][kCol] =
+          (aRow < M && aCol < K) ? A[aRow * K + aCol] : 0.0f;
+      }
+    }
+    
+    // load B tile
+    for (int kRow = threadRow; kRow < BK; kRow += blockDim.y) {
+      const int bRow = bk + kRow;
+      #pragma unroll
+      for (int c = 0; c < TN; ++c) {
+        const int bCol = globalColBase + c;
+        Bs[kRow][threadCol * TN + c] =
+          (bRow < K && bCol < N) ? B[bRow * N + bCol] : 0.0f;
+      }
+    }
+```
+
+Ignoring the `kCol` loop for now, each thread loads a `TM`-element long slice, at the column index `threadCol`, from `A` into `As`. Similarly, ignoring the `kRow` loop, each thread loads a `TN`-element long slice, at the row index `threadRow`, from `B` into `Bs`.
+
+However, the threads in this block need to load its entire tile of `A` and `B` into shared memory. For `As` we know that we have the `BM` dimension covered as `BM / TM == blockDim.y`. But we don't know whether we have the `BK` dimension covered as we don't know whether `BK <= blockDim.x`. If `BK > blockDim.x` then we have columns of `As` that don't get covered. This is why we need the `kCol` loop. We stride over the columns by `blockDim.x` to cover any remaining columns. Similarly, we need the `kRow` loop to cover any remaining rows of `B`.
+
+Next, each thread computes the results for its thread tile. As usual, we need to synchronize before computing the results to ensure that all threads have loaded their data into shared memory, and after to ensure that no thread begins loading the next tile before all threads have finished computing the results for the current tile.
+
+```cpp
+    __syncthreads();
+
+    // compute
+    #pragma unroll
+    for (int k = 0; k < BK; ++k) {
+      #pragma unroll
+      for (int r = 0; r < TM; ++r) {
+        aReg[r] = As[threadRow * TM + r][k];
+      }
+      #pragma unroll
+      for (int c = 0; c < TN; ++c) {
+        bReg[c] = Bs[k][threadCol * TN + c];
+      }
+      #pragma unroll
+      for (int r = 0; r < TM; ++r) {
+        #pragma unroll
+        for (int c = 0; c < TN; ++c) {
+          acc[r][c] += aReg[r] * bReg[c];
+        }
+      }
+    }
+
+    __syncthreads();
+```
+
+In each iteration of the `k`-loop, each thread computes the product of the elements it is responsible for in `As` and `Bs` and adds it to the corresponding element in `acc`.
+
+It is easier to see what's happening if we look at just the first iteration of the `k`-loop. First, we loop over `r` to load a `TM`-element vector from `As` into `aReg` — that is from shared memory into registers. Then, we loop over `c` to load a `TN`-element vector from `Bs` into `bReg`. Finally, we loop over both `r` and `c` to take the product of each element in `aReg` and `bReg` and add it to the corresponding element in `acc`.
+
+We now have the results that the thread has computed in `acc`. We just have to write the values to `C`.
+
+```cpp
+  // write results
+  #pragma unroll
+  for (int r = 0; r < TM; ++r) {
+    const int row = globalRowBase + r;
+    if (row < M) {
+      #pragma unroll
+      for (int c = 0; c < TN; ++c) {
+        const int col = globalColBase + c;
+        if (col < N) {
+          const int idx = row * N + col;
+          C[idx] = alpha * acc[r][c] + beta * C[idx];
+        }
+      }
+    }
+  }
+}
+```
+
+This is a simple loop over each element in `acc`.
+
+### Performance
+
+
+## Kernel 6 — Vectorize SMEM and GMEM Accesses
+
+### Implementation
+
+Let's take another look at how each thread accesses shared memory in the previous kernel. Here is the same sketch where we look at the first iteration of the `k`-loop.
+
+From `As`, each thread loads a slice of a column, which is a strided access. From `Bs`, each thread loads a slice of a row, which is a contiguous access. We can improve the performance by making both accesses contiguous, allowing for vectorized loads.
+
+We can achieve this by transposing `As`. That is, we change the layout of `As` from `As[BM][BK]` to `As[BK][BM]`. This way, when each thread loads its `TM`-element vector from `As`, it will be a contiguous access.
+
+The initialization code changes accordingly.
+
+```cpp
+  __shared__ float As[BK][BM];
+  __shared__ float Bs[BK][BN];
+```
+
+And the only change to the loading code is that we swap the indices when loading `As`.
+
+```cpp
+    // load A tile
+    for (int kCol = threadCol; kCol < BK; kCol += blockDim.x) {
+      const int aCol = bk + kCol;
+      #pragma unroll
+      for (int r = 0; r < TM; ++r) {
+        const int aRow = globalRowBase + r;
+        As[kCol][threadRow * TM + r] =
+          (aRow < M && aCol < K) ? A[aRow * K + aCol] : 0.0f;
+      }
+    }
+```

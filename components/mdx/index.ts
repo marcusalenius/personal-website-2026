@@ -2,6 +2,8 @@ import { Blockquote } from "@/components/Blockquote";
 import { MDLink } from "@/components/MDLink";
 import { Caption } from "@/components/Caption";
 import { Figure } from "@/components/Figure";
+import { Image } from "@/components/Image";
+import { Video } from "@/components/Video";
 import { VersionTag } from "@/components/VersionTag";
 
 export const mdxComponents = {
@@ -9,5 +11,7 @@ export const mdxComponents = {
   blockquote: Blockquote,
   Caption,
   Figure,
+  Image,
+  Video,
   VersionTag,
 } as const;

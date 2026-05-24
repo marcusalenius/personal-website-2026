@@ -9,6 +9,8 @@ out/
 
 # velite
 .velite/
+# generated asset output (clean:true wipes it each build; source lives in content/**/media)
+/public/static/
 
 # misc
 .DS_Store
