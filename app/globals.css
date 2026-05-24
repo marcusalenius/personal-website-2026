@@ -195,6 +195,32 @@ body {
   margin-top: 14px;
 }
 
+/* Skip layout/paint for off-screen blocks. Math-heavy posts render tens of
+   thousands of KaTeX spans; rendering only what's near the viewport keeps the
+   page fast. `auto` lets each block remember its real size after first render,
+   so the estimate below only applies to blocks not yet scrolled into view.
+
+   Two side effects to keep in mind before changing this rule:
+   - `.sidenotes` is excluded because content-visibility implies `contain: paint`,
+     which clips a subtree to its own box. The sidenote notes are positioned out
+     in the right gutter (`left: calc(100% + 24px)`), outside the column-width
+     container, so paint containment would make them invisible.
+   - Off-screen blocks report their *estimated* height, not their real one, so
+     anchor scrolling can't trust a precomputed destination. TableOfContents.tsx
+     animates the scroll while re-measuring the live target each frame to
+     compensate; if you remove content-visibility, that workaround can be
+     simplified back to a native smooth scroll. */
+.article-body > *:not(.sidenotes) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 150px;
+}
+
+/* Headings are short and numerous; a tighter estimate keeps the pre-render page
+   height (and TOC scroll targets) closer to reality. */
+.article-body > :is(h2, h3, h4, h5, h6) {
+  contain-intrinsic-size: auto 40px;
+}
+
 .article-body h2 {
   font-size: 24px;
   line-height: 1.3;
