@@ -8,7 +8,9 @@ import { MDXContent } from "@/components/MDXContent";
 import { TableOfContents } from "@/components/TableOfContents";
 import { FootnoteScroll } from "@/components/FootnoteScroll";
 import { Sidenotes } from "@/components/Sidenotes";
+import { HashScroll } from "@/components/HashScroll";
 import { buildMetadata } from "@/lib/seo";
+import { buildToc } from "@/lib/toc";
 
 export function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
@@ -58,10 +60,11 @@ export default async function PostPage({
         <MDXContent code={post.body} />
       </div>
       {post.maxTocLevel ? (
-        <TableOfContents maxLevel={post.maxTocLevel} />
+        <TableOfContents items={buildToc(post.toc, post.maxTocLevel)} />
       ) : null}
       <FootnoteScroll />
       <Sidenotes />
+      <HashScroll />
     </Layout>
   );
 }

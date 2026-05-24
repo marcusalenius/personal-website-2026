@@ -2,30 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { animateScrollTo } from "@/lib/smooth-scroll";
+import type { TocItem } from "@/lib/toc";
 
-type Heading = { id: string; html: string; level: number };
-
-function readHeadings(maxLevel: number): Heading[] {
-  const levels: string[] = [];
-  for (let l = 2; l <= maxLevel; l++) levels.push(`h${l}`);
-  if (levels.length === 0) return [];
-
-  const selector = levels.map((l) => `.article-body ${l}`).join(", ");
-  const nodes = document.querySelectorAll<HTMLElement>(selector);
-
-  return Array.from(nodes)
-    .filter((el) => el.id && !el.closest(".footnotes"))
-    .map((el) => ({
-      id: el.id,
-      // Reuse the heading's already-rendered HTML (KaTeX spans included) so math
-      // shows in the TOC. Source is our own compiled MDX, not user input.
-      html: el.innerHTML,
-      level: Number(el.tagName.slice(1)),
-    }));
-}
-
-export function TableOfContents({ maxLevel }: { maxLevel: number }) {
-  const [items, setItems] = useState<Heading[]>([]);
+export function TableOfContents({ items }: { items: TocItem[] }) {
   const [activeId, setActiveId] = useState<string>("");
   // While a click-triggered smooth scroll is in flight, the clicked heading may
   // not reach the active line (e.g. the last heading near page bottom), so we
@@ -35,14 +14,13 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
   const cancelScrollRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    const headings = readHeadings(maxLevel);
-    setItems(headings);
-    const first = headings[0];
+    const first = items[0];
     if (!first) return;
 
-    const els = headings
-      .map((h) => document.getElementById(h.id))
+    const els = items
+      .map((it) => document.getElementById(it.id))
       .filter((el): el is HTMLElement => el !== null);
+    if (els.length === 0) return;
 
     // Active = the last heading whose top has crossed a line near the viewport
     // top. Recomputed whenever a heading crosses that line (gapless across long
@@ -63,7 +41,7 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
     });
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [maxLevel]);
+  }, [items]);
 
   const handleClick = (e: React.MouseEvent, id: string) => {
     const el = document.getElementById(id);

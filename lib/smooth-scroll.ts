@@ -5,8 +5,13 @@ type AnimateOptions = {
   // section headings, read downward) or centered (for footnotes/refs, read in
   // context). Defaults to "start".
   block?: ScrollBlock;
-  // Called once the animation settles, is interrupted, or completes instantly
-  // (reduced motion). Useful for releasing UI locks tied to the scroll.
+  // "smooth" eases to the target (for in-page clicks); "instant" jumps and then
+  // re-pins the target each frame until layout settles (for landing on a hash at
+  // load, where a long scroll-from-top would be unwanted). Reduced-motion always
+  // behaves as "instant". Defaults to "smooth".
+  behavior?: "smooth" | "instant";
+  // Called once the scroll settles or is interrupted. Useful for releasing UI
+  // locks tied to the scroll.
   onDone?: () => void;
 };
 
@@ -23,7 +28,7 @@ type AnimateOptions = {
 // the scroll. Returns a function that cancels the in-flight animation.
 export function animateScrollTo(
   el: HTMLElement,
-  { block = "start", onDone }: AnimateOptions = {},
+  { block = "start", behavior = "smooth", onDone }: AnimateOptions = {},
 ): () => void {
   const maxScroll = () =>
     document.documentElement.scrollHeight - window.innerHeight;
@@ -54,9 +59,33 @@ export function animateScrollTo(
     onDone?.();
   };
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    window.scrollTo(0, liveDesired());
-    finish();
+  // Abort if the user takes over the scroll.
+  window.addEventListener("wheel", finish, { passive: true });
+  window.addEventListener("touchstart", finish, { passive: true });
+  window.addEventListener("keydown", finish);
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (behavior === "instant" || reduced) {
+    // Jump to the target, then re-pin it each frame until it stops moving. A
+    // single scrollTo would land on the estimated position and drift as
+    // content-visibility blocks render; re-pinning holds the target on its line
+    // while the layout above settles. Capped so it can't spin forever.
+    let prev = NaN;
+    let stable = 0;
+    let frames = 0;
+    const pin = () => {
+      const desired = liveDesired();
+      window.scrollTo(0, desired);
+      if (Math.abs(desired - prev) < 1) {
+        if (++stable >= 2) return finish();
+      } else {
+        stable = 0;
+      }
+      prev = desired;
+      if (++frames > 90) return finish();
+      raf = requestAnimationFrame(pin);
+    };
+    raf = requestAnimationFrame(pin);
     return finish;
   }
 
@@ -87,11 +116,6 @@ export function animateScrollTo(
     raf = requestAnimationFrame(step);
   };
 
-  // Abort if the user takes over the scroll.
-  window.addEventListener("wheel", finish, { passive: true });
-  window.addEventListener("touchstart", finish, { passive: true });
-  window.addEventListener("keydown", finish);
   raf = requestAnimationFrame(step);
-
   return finish;
 }
