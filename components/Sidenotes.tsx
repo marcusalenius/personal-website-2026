@@ -18,16 +18,19 @@ export function Sidenotes() {
     if (!article) return;
 
     let container: HTMLElement | null = null;
+    let notes: { note: HTMLElement; ref: HTMLElement }[] = [];
 
-    const clear = () => {
+    const teardown = () => {
       container?.remove();
       container = null;
+      notes = [];
       article.classList.remove("has-sidenotes");
     };
 
-    const build = () => {
-      clear();
-      if (window.innerWidth <= BREAKPOINT) return;
+    // Build the note elements once. Their vertical positions are set separately
+    // by position() so reflows don't have to recreate the DOM.
+    const construct = () => {
+      teardown();
 
       const refs = Array.from(
         article.querySelectorAll<HTMLAnchorElement>("[data-footnote-ref]"),
@@ -37,11 +40,6 @@ export function Sidenotes() {
       container = document.createElement("div");
       container.className = "sidenotes";
       container.setAttribute("aria-hidden", "true");
-      article.appendChild(container);
-      article.classList.add("has-sidenotes");
-
-      const articleTop = article.getBoundingClientRect().top + window.scrollY;
-      let prevBottom = 0;
 
       for (const ref of refs) {
         const def = document.getElementById(
@@ -66,7 +64,22 @@ export function Sidenotes() {
 
         note.append(number, body);
         container.appendChild(note);
+        notes.push({ note, ref });
+      }
 
+      article.appendChild(container);
+      article.classList.add("has-sidenotes");
+    };
+
+    // Align each note to its reference, stacking when they crowd. Mutates only
+    // the notes' `top`, so it never detaches the elements — safe to run on every
+    // reflow (including the content-visibility height changes during a scroll, so
+    // a scroll animation tracking a note isn't yanked out from under it).
+    const position = () => {
+      if (!container) return;
+      const articleTop = article.getBoundingClientRect().top + window.scrollY;
+      let prevBottom = 0;
+      for (const { note, ref } of notes) {
         const refTop =
           ref.getBoundingClientRect().top + window.scrollY - articleTop;
         const top = Math.max(refTop, prevBottom + GAP);
@@ -75,17 +88,27 @@ export function Sidenotes() {
       }
     };
 
-    build();
+    const update = () => {
+      if (window.innerWidth <= BREAKPOINT) {
+        teardown();
+        return;
+      }
+      if (!container) construct();
+      position();
+    };
 
-    // Reflow on width changes and on content reflow (fonts/images settling).
-    const observer = new ResizeObserver(build);
+    update();
+
+    // Reflow on width changes and on content reflow (fonts/images settling, or
+    // content-visibility blocks rendering as they scroll into view).
+    const observer = new ResizeObserver(update);
     observer.observe(article);
-    window.addEventListener("resize", build);
+    window.addEventListener("resize", update);
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("resize", build);
-      clear();
+      window.removeEventListener("resize", update);
+      teardown();
     };
   }, []);
 

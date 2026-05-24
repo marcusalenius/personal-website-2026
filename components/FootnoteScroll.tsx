@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { animateScrollTo } from "@/lib/smooth-scroll";
 
 // Flashes the target once it's actually in view. A smooth scroll to a distant
 // footnote takes time, so starting the animation on click would let it fade out
@@ -34,6 +35,9 @@ export function FootnoteScroll() {
     const root = document.querySelector(".article-body");
     if (!root) return;
 
+    // Cancels the in-flight scroll so rapid clicks don't fight each other.
+    let cancelScroll: (() => void) | null = null;
+
     const onClick = (e: Event) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest<HTMLAnchorElement>(
@@ -47,7 +51,13 @@ export function FootnoteScroll() {
       if (!dest) return;
 
       e.preventDefault();
+      cancelScroll?.();
 
+      // Footnotes center their target in the viewport (read in context), unlike
+      // the TOC which pins headings to the top. The shared helper tracks the live
+      // target each frame to stay accurate under content-visibility (see
+      // lib/smooth-scroll.ts).
+      //
       // When footnotes render as sidenotes the bottom list is hidden. The note
       // can stack below its reference, so flash the matching sidenote (and only
       // scroll if it's off-screen) to point the reader to it.
@@ -61,17 +71,20 @@ export function FootnoteScroll() {
         const rect = sidenote.getBoundingClientRect();
         const offscreen = rect.top < 0 || rect.bottom > window.innerHeight;
         if (offscreen) {
-          sidenote.scrollIntoView({ behavior: "smooth", block: "center" });
+          cancelScroll = animateScrollTo(sidenote, { block: "center" });
         }
       } else {
-        dest.scrollIntoView({ behavior: "smooth", block: "center" });
+        cancelScroll = animateScrollTo(dest, { block: "center" });
       }
 
       flashWhenVisible(landing);
     };
 
     root.addEventListener("click", onClick);
-    return () => root.removeEventListener("click", onClick);
+    return () => {
+      root.removeEventListener("click", onClick);
+      cancelScroll?.();
+    };
   }, []);
 
   return null;

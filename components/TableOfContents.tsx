@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { animateScrollTo } from "@/lib/smooth-scroll";
 
 type Heading = { id: string; html: string; level: number };
 
@@ -75,76 +76,14 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
     setActiveId(id);
     history.pushState(null, "", `#${id}`);
 
-    const targetTop = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.scrollIntoView({ block: "start" });
-      return;
-    }
-
+    // Pin selection and suppress scroll-driven recomputes until the scroll lands.
     clickLockRef.current = true;
-
-    // We animate the scroll ourselves instead of using native smooth scroll.
-    // The `.article-body` content-visibility rule (see globals.css) leaves
-    // off-screen blocks at an estimated height, so a fixed destination would
-    // over- or undershoot and then snap back as real heights render in mid-scroll.
-    // We run a time-based ease-in-out tween (matching native smooth-scroll feel)
-    // but recompute the heading's live position every frame, so it homes in on the
-    // true destination and lands exactly there.
-    let raf = 0;
-
-    const stop = () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("wheel", stop);
-      window.removeEventListener("touchstart", stop);
-      window.removeEventListener("keydown", stop);
-      clickLockRef.current = false;
-      cancelScrollRef.current = null;
-    };
-    cancelScrollRef.current = stop;
-
-    const maxScroll = () =>
-      document.documentElement.scrollHeight - window.innerHeight;
-    const clamp = (y: number) => Math.min(Math.max(y, 0), maxScroll());
-    // Absolute scroll position that puts the heading on its target line, per the
-    // current (live) layout.
-    const liveDesired = () =>
-      clamp(window.scrollY + el.getBoundingClientRect().top - targetTop);
-
-    // Distance-scaled duration, capped to a native-like band. Tweak here to make
-    // the scroll faster/slower overall.
-    const startY = window.scrollY;
-    const duration = Math.min(
-      900,
-      Math.max(250, 200 + Math.abs(liveDesired() - startY) * 0.075),
-    );
-    // Cubic ease-in-out (slow start, slow end), like native smooth scroll.
-    const ease = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-    const t0 = performance.now();
-    const step = (now: number) => {
-      const t = Math.min(1, (now - t0) / duration);
-      const desired = liveDesired();
-      if (t >= 1) {
-        window.scrollTo(0, desired);
-        // One settle frame to absorb any final layout shift, then stop.
-        raf = requestAnimationFrame(() => {
-          window.scrollTo(0, liveDesired());
-          stop();
-        });
-        return;
-      }
-      window.scrollTo(0, startY + (desired - startY) * ease(t));
-      raf = requestAnimationFrame(step);
-    };
-
-    // Abort if the user takes over the scroll.
-    window.addEventListener("wheel", stop, { passive: true });
-    window.addEventListener("touchstart", stop, { passive: true });
-    window.addEventListener("keydown", stop);
-
-    raf = requestAnimationFrame(step);
+    cancelScrollRef.current = animateScrollTo(el, {
+      block: "start",
+      onDone: () => {
+        clickLockRef.current = false;
+      },
+    });
   };
 
   if (items.length === 0) return null;
