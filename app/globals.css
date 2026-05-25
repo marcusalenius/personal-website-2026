@@ -152,25 +152,36 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Inline body links: SemiBold heading-color text with a faded-blue
-   underline bar (6px tall, y=12 in the tight 16px box so it sits 2px below the
-   text bottom), 1px overhang each side. */
+/* Inline body links: SemiBold heading-color text with a faded-blue underline
+   bar drawn with inset box-shadows (a negative y-offset fills a solid band along
+   the bottom edge); box-shadow repeats per line fragment, so the bar wraps with
+   the link. An inset shadow pins to the font content box, which for Nunito Sans
+   sits ~7px below the baseline — too low. A second bg-colored inset shadow masks
+   off the lowest 3px, lifting the visible band to sit just under the text (raise
+   that 3px to lift the bar further, lower it to drop the bar). The faded-blue
+   band is the 6px strip above the mask. On hover the band grows upward; the mask
+   is fixed, so the bottom stays put. */
 .md-link {
   font-weight: 600;
   color: var(--color-text-heading);
-  line-height: 1;
   text-decoration: none;
-  background-image: linear-gradient(
-    var(--color-link-highlight),
-    var(--color-link-highlight)
-  );
-  background-repeat: no-repeat;
-  background-size: 100% 6px;
-  background-position: 0 12px;
   padding-inline: 1px;
   margin-inline: -1px;
+  box-shadow:
+    inset 0 -3px var(--color-bg),
+    inset 0 -9px var(--color-link-highlight);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+  transition:
+    color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.md-link:hover {
+  color: var(--color-accent);
+  box-shadow:
+    inset 0 -3px var(--color-bg),
+    inset 0 -11px var(--color-link-highlight);
 }
 
 .md-link-arrow {
@@ -336,6 +347,7 @@ body {
 .article-body a[data-footnote-ref],
 .article-body a[data-footnote-backref] {
   background: none;
+  box-shadow: none;
   padding: 0;
   margin: 0;
   color: var(--color-accent);
