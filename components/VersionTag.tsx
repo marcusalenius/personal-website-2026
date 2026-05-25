@@ -1,4 +1,4 @@
-import { MDLink } from "./MDLink";
+import { ArrowUpRightIcon } from "@/components/icons";
 
 const REPO = "marcusalenius/personal-website-2026";
 
@@ -23,7 +23,15 @@ export function VersionTag() {
 
   return (
     <p>
-      <MDLink href={href}>{label}</MDLink>
+      <a
+        href={href}
+        className="font-semibold text-muted no-underline transition-colors hover:text-muted-strong"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {label}
+        <ArrowUpRightIcon size={10} className="md-link-arrow" />
+      </a>
     </p>
   );
 }
