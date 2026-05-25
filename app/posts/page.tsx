@@ -47,9 +47,11 @@ export default function PostsPage() {
                 </div>
                 <Link
                   href={`/posts/${post.slug}`}
-                  className="flex min-w-0 flex-1 flex-col gap-[9px]"
+                  className="post-link group relative flex min-w-0 flex-1 flex-col gap-[9px]"
                 >
-                  <span className="type-title text-heading">{post.title}</span>
+                  <span className="type-title text-heading transition-colors ease-[ease] group-hover:text-accent">
+                    {post.title}
+                  </span>
                   <span className="type-excerpt text-body">{post.lede}</span>
                 </Link>
               </article>

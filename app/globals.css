@@ -141,6 +141,23 @@
   transform: scaleX(1);
 }
 
+.post-link::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--color-accent);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.post-link:hover::before {
+  transform: scaleY(1);
+}
+
 @utility type-caption {
   font-size: 15px;
   line-height: 1.4;
