@@ -21,7 +21,7 @@ export default function WorkPage() {
       <div className="mt-[64px] sm:mt-[95px]">
         <Title subhead="/work" />
       </div>
-      <ul className="mt-[56px] flex flex-col gap-[30px] sm:mt-[78px]">
+      <ul className="mt-[56px] flex flex-col gap-[24px] sm:mt-[78px]">
         {entries.map((entry) => (
           <li
             key={`${entry.organization}-${entry.start}`}

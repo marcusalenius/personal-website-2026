@@ -38,7 +38,7 @@ export default function PostsPage() {
       </div>
       <div className="mt-[56px] flex flex-col gap-[44px] sm:mt-[78px]">
         {Array.from(groups.entries()).map(([year, postsInYear]) => (
-          <section key={year} className="flex flex-col gap-[18px]">
+          <section key={year} className="flex flex-col gap-[24px]">
             <h2 className="type-heading text-muted">{year}</h2>
             {postsInYear.map((post) => (
               <article key={post.slug} className="flex gap-[28px]">
@@ -47,7 +47,7 @@ export default function PostsPage() {
                 </div>
                 <Link
                   href={`/posts/${post.slug}`}
-                  className="post-link group relative flex min-w-0 flex-1 flex-col gap-[9px]"
+                  className="post-link group relative flex min-w-0 flex-1 flex-col gap-[5px]"
                 >
                   <span className="type-title text-heading transition-colors ease-[ease] group-hover:text-accent">
                     {post.title}
