@@ -30,7 +30,7 @@ export function Nav() {
               className={
                 active
                   ? "type-nav-active text-accent"
-                  : "type-nav text-nav"
+                  : "type-nav text-muted-strong"
               }
             >
               {item.label}

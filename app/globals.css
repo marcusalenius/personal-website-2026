@@ -5,10 +5,11 @@
   --color-text-heading: #1f232a;
   --color-text-body: #34393f;
   --color-text-muted: #8e939b;
-  --color-text-nav: #6e737b;
+  --color-text-muted-strong: #6e737b;
   --color-line-divider: #dfddd6;
   --color-line-nav-slash: #b4b8be;
   --color-accent: #2f5a82;
+  --color-accent-hover: #264a6b;
   --color-link-highlight: #c3cfde;
 }
 
@@ -17,7 +18,7 @@
   --color-heading: var(--color-text-heading);
   --color-body: var(--color-text-body);
   --color-muted: var(--color-text-muted);
-  --color-nav: var(--color-text-nav);
+  --color-muted-strong: var(--color-text-muted-strong);
   --color-divider: var(--color-line-divider);
   --color-nav-slash: var(--color-line-nav-slash);
   --color-accent: var(--color-accent);
@@ -351,6 +352,12 @@ body {
   padding: 0;
   margin: 0;
   color: var(--color-accent);
+  transition: color 0.15s ease;
+}
+
+.article-body a[data-footnote-ref]:hover,
+.article-body a[data-footnote-backref]:hover {
+  color: var(--color-accent-hover);
 }
 
 .article-body a[data-footnote-ref] {
@@ -481,15 +488,25 @@ body {
 
 .toc-link {
   display: block;
+  padding: 4px 0;
   font-size: 13px;
   line-height: 1.4;
   color: var(--color-text-muted);
   text-decoration: none;
+  cursor: pointer;
   transition: color 0.15s ease;
+}
+
+.toc-link:not(.toc-link-active):hover {
+  color: var(--color-text-muted-strong);
 }
 
 .toc-link-active {
   color: var(--color-accent);
+}
+
+.toc-link-active:hover {
+  color: var(--color-accent-hover);
 }
 
 /* Hide the TOC when the gutter can't hold it (column + gap + TOC width). */

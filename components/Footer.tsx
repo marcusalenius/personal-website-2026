@@ -10,7 +10,7 @@ export function Footer() {
             <li key={contact.kind}>
               <a
                 href={contact.href}
-                className="inline-flex items-center gap-[7px] type-caption text-muted"
+                className="inline-flex items-center gap-[7px] type-caption text-muted transition-colors ease-[ease] hover:text-muted-strong"
                 {...(contact.href.startsWith("http")
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}

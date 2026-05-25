@@ -86,7 +86,7 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
 
   return (
     <nav className="toc" aria-label="Table of contents">
-      <ul className="flex flex-col gap-[8px]">
+      <ul className="flex flex-col -my-[4px]">
         {items.map((h) => (
           <li key={h.id} style={{ paddingLeft: (h.level - 2) * 12 }}>
             <a
