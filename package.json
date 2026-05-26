@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "concurrently -k -n velite,next -c blue,green \"velite --watch\" \"next dev\"",
     "velite": "velite build",
-    "build": "velite build && next build",
+    "build": "npm run icons && npm run og && velite build && next build",
     "icons": "node scripts/gen-icons.mjs",
+    "og": "node scripts/gen-og.mjs",
     "start": "next start",
     "lint": "next lint"
   },
