@@ -5,10 +5,15 @@ import { Title } from "@/components/Title";
 import { MDXContent } from "@/components/MDXContent";
 import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildMetadata({ path: "/" });
+const home = pages.find((p) => p.slug === "home");
+
+export const metadata: Metadata = buildMetadata({
+  title: "Marcus’s website",
+  description: home?.description,
+  path: "/",
+});
 
 export default function HomePage() {
-  const home = pages.find((p) => p.slug === "home");
   if (!home) throw new Error("content/pages/home.mdx not found");
 
   return (

@@ -7,8 +7,9 @@ import { formatMonthDay } from "@/lib/date";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Posts",
-  description: "Writing by Marcus Alenius.",
+  title: "Marcus’s posts",
+  description:
+    "I love explaining what I’ve learned — and what I’m still figuring out. Essays on AI, computer systems, and teaching.",
   path: "/posts",
 });
 

@@ -6,8 +6,9 @@ import { formatMonthYear } from "@/lib/date";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Work",
-  description: "Roles and research Marcus Alenius has worked on.",
+  title: "Marcus’s work",
+  description:
+    "Where I’ve worked — software engineering at AWS, NLP and HCI research at Carnegie Mellon, and teaching computer science as a Head TA.",
   path: "/work",
 });
 

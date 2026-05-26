@@ -52,12 +52,33 @@ const work = defineCollection({
   }),
 });
 
+// First prose paragraph of an MDX body, as plain text — can be used as the 
+// page's meta description so it stays in sync with the visible intro copy.
+function firstParagraph(content: string): string {
+  const block =
+    content
+      .trim()
+      .split(/\n\s*\n/)
+      .map((b) => b.trim())
+      .find((b) => b && !/^[#<]|^import\s/.test(b)) ?? "";
+  return block
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1") // [text](url) -> text
+    .replace(/[*_`]/g, "") // strip emphasis/code markers
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 const pages = defineCollection({
   name: "Page",
   pattern: "pages/*.mdx",
   schema: s.object({
     slug: s.slug("pages"),
     body: s.mdx(),
+    description: s
+      .custom<string>()
+      .transform((_value, { meta }) =>
+        firstParagraph((meta.content as string | undefined) ?? "")
+      ),
   }),
 });
 

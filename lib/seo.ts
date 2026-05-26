@@ -22,7 +22,7 @@ export function buildMetadata({
   path = "/",
   image = siteConfig.ogImage,
 }: BuildMetadata): Metadata {
-  const fullTitle = title ? `${title} — ${siteName}` : siteName;
+  const fullTitle = title ?? siteName;
   const canonical = withTrailingSlash(path);
 
   return {

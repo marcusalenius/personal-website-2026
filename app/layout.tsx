@@ -23,10 +23,7 @@ const inconsolata = Inconsolata({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteName,
-    template: `%s — ${siteName}`,
-  },
+  title: siteName,
   description: siteConfig.description,
 };
 
