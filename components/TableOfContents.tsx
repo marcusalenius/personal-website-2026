@@ -85,7 +85,7 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
   if (items.length === 0) return null;
 
   return (
-    <nav className="toc" aria-label="Table of contents">
+    <nav className="toc load-fade" aria-label="Table of contents">
       <ul className="flex flex-col -my-[4px]">
         {items.map((h) => (
           <li key={h.id} style={{ paddingLeft: (h.level - 2) * 12 }}>

@@ -18,6 +18,9 @@ export function Sidenotes() {
     if (!article) return;
 
     let container: HTMLElement | null = null;
+    // Animate the entrance only on the first build; later rebuilds (reflow on
+    // resize / font settling) just reposition without re-fading.
+    let firstBuild = true;
 
     const clear = () => {
       container?.remove();
@@ -37,6 +40,10 @@ export function Sidenotes() {
       container = document.createElement("div");
       container.className = "sidenotes";
       container.setAttribute("aria-hidden", "true");
+      if (firstBuild) {
+        container.classList.add("load-fade");
+        firstBuild = false;
+      }
       article.appendChild(container);
       article.classList.add("has-sidenotes");
 
@@ -78,7 +85,16 @@ export function Sidenotes() {
     build();
 
     // Reflow on width changes and on content reflow (fonts/images settling).
-    const observer = new ResizeObserver(build);
+    // ResizeObserver fires once synchronously on observe; we already built
+    // above, so skip that first callback to avoid clobbering the entrance fade.
+    let observedOnce = false;
+    const observer = new ResizeObserver(() => {
+      if (!observedOnce) {
+        observedOnce = true;
+        return;
+      }
+      build();
+    });
     observer.observe(article);
     window.addEventListener("resize", build);
 

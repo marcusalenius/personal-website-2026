@@ -196,6 +196,35 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Page-load reveal: the title fades in as one block (fade + rise + de-blur);
+   body/list follows as a second block just after. Gated behind no-preference,
+   so under reduced-motion the opacity:0 base never applies and content shows at
+   once. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes load-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+      filter: blur(3px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .load-title {
+    opacity: 0;
+    animation: load-reveal 520ms cubic-bezier(0.2, 0, 0, 1) both;
+  }
+
+  .load-fade {
+    opacity: 0;
+    animation: load-reveal 520ms cubic-bezier(0.2, 0, 0, 1) 100ms both;
+  }
+}
+
 /* Inline body links: SemiBold heading-color text with a faded-blue underline
    bar drawn with inset box-shadows (a negative y-offset fills a solid band along
    the bottom edge); box-shadow repeats per line fragment, so the bar wraps with

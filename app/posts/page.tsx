@@ -37,7 +37,7 @@ export default function PostsPage() {
       <div className="mt-[64px] sm:mt-[95px]">
         <Title subhead="/posts" />
       </div>
-      <div className="mt-[56px] flex flex-col gap-[44px] sm:mt-[78px]">
+      <div className="load-fade mt-[56px] flex flex-col gap-[44px] sm:mt-[78px]">
         {Array.from(groups.entries()).map(([year, postsInYear]) => (
           <section key={year} className="flex flex-col gap-[24px]">
             <h2 className="type-heading text-muted">{year}</h2>

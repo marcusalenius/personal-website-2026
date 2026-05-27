@@ -19,7 +19,7 @@ export function ArticleHeader({
   const minutes = readingTime ?? readingTimeMinutes(wordCount);
 
   return (
-    <header className="flex flex-col gap-[16px]">
+    <header className="load-title flex flex-col gap-[16px]">
       <p className="type-meta text-accent">
         {formatMonthDayYear(date)} · {minutes} min read
       </p>

@@ -21,7 +21,7 @@ export default function HomePage() {
       <div className="mt-[64px] sm:mt-[95px]">
         <Title />
       </div>
-      <div className="mt-[48px] type-body text-body space-y-[22px] sm:mt-[62px]">
+      <div className="load-fade mt-[48px] type-body text-body space-y-[22px] sm:mt-[62px]">
         <MDXContent code={home.body} />
       </div>
     </Layout>
