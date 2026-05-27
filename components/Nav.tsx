@@ -25,7 +25,7 @@ export function Nav() {
         return (
           <Fragment key={item.href}>
             {i > 0 && (
-              <span className="type-nav text-nav-slash" aria-hidden>
+              <span className="type-nav text-nav-slash select-none" aria-hidden>
                 /
               </span>
             )}
