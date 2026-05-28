@@ -172,13 +172,6 @@
   font-style: normal;
 }
 
-@utility type-role {
-  font-size: 15px;
-  line-height: 1.4;
-  font-weight: 400;
-  font-style: italic;
-}
-
 @utility type-meta {
   font-size: 14px;
   line-height: 1.5;
@@ -518,7 +511,7 @@ body {
 
 .sidenote {
   position: absolute;
-  left: calc(100% + 24px);
+  left: calc(100% + 32px);
   width: 180px;
   display: flex;
   gap: 6px;
@@ -552,7 +545,7 @@ body {
 .toc {
   position: fixed;
   top: 170px;
-  right: calc(50% + 324px);
+  right: calc(50% + 332px);
   width: 180px;
   max-height: calc(100vh - 200px);
   overflow-y: auto;

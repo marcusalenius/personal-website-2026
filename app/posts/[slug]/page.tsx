@@ -54,7 +54,7 @@ export default async function PostPage({
           wordCount={post.metadata.wordCount}
         />
       </div>
-      <div className="article-body mt-[40px]">
+      <div className="article-body mt-[24px]">
         <MDXContent code={post.body} />
       </div>
       {post.maxTocLevel ? (

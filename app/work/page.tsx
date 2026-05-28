@@ -38,7 +38,7 @@ export default function WorkPage() {
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-[5px]">
               <div className="type-title text-heading">{entry.organization}</div>
-              <div className="type-role text-body">{entry.role}</div>
+              <div className="type-excerpt text-body">{entry.role}</div>
             </div>
           </li>
         ))}
