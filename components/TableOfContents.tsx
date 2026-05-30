@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { ArrowUpIcon } from "./icons";
+
 type Heading = { id: string; html: string; level: number };
 
 function readHeadings(maxLevel: number): Heading[] {
@@ -44,10 +46,11 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
     // Active = the last heading whose top has crossed a line near the viewport
     // top. Recomputed whenever a heading crosses that line (gapless across long
     // sections, unlike picking only headings currently inside a narrow band).
+    // Before the first heading crosses, "Top" is active.
     const computeActive = () => {
       if (clickLockRef.current) return;
       const line = window.innerHeight * 0.15;
-      let current = first.id;
+      let current = "top";
       for (const el of els) {
         if (el.getBoundingClientRect().top - line <= 1) current = el.id;
       }
@@ -61,6 +64,23 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [maxLevel]);
+
+  const handleTopClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    setActiveId("top");
+    clickLockRef.current = true;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    history.pushState(null, "", window.location.pathname + window.location.search);
+
+    const release = () => {
+      clickLockRef.current = false;
+      window.removeEventListener("scrollend", release);
+    };
+    window.addEventListener("scrollend", release);
+    setTimeout(release, 700);
+  };
 
   const handleClick = (e: React.MouseEvent, id: string) => {
     const el = document.getElementById(id);
@@ -87,6 +107,16 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
   return (
     <nav className="toc load-fade" aria-label="Table of contents">
       <ul className="flex flex-col -my-[4px]">
+        <li className="toc-top">
+          <a
+            href="#"
+            onClick={handleTopClick}
+            className={`toc-link toc-top-link${activeId === "top" ? " toc-link-active" : ""}`}
+          >
+            <ArrowUpIcon size={10} className="toc-top-arrow" />
+            Top
+          </a>
+        </li>
         {items.map((h) => (
           <li key={h.id} style={{ paddingLeft: (h.level - 2) * 12 }}>
             <a

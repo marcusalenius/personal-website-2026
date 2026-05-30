@@ -551,6 +551,21 @@ body {
   overflow-y: auto;
 }
 
+/* Divider between the "Top" control and the heading outline. */
+.toc-top {
+  margin-bottom: 2px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.toc-top-arrow {
+  display: inline-block;
+  margin-right: 5px;
+  /* viewBox is cropped to the path bounds, so the svg's bottom edge is the
+     arrow's actual bottom; baseline alignment lands it on the text baseline. */
+  vertical-align: baseline;
+}
+
 .toc-link {
   display: block;
   padding: 4px 0;

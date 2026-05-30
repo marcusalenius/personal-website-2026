@@ -55,6 +55,11 @@ export const ArrowLeftIcon = croppedIcon(
   "32 48 192 160",
 );
 
+export const ArrowUpIcon = croppedIcon(
+  "M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z",
+  "48 32 160 192",
+);
+
 // Bold weight — trails external body links.
 export const ArrowUpRightIcon = croppedIcon(
   "M204,64V168a12,12,0,0,1-24,0V93L72.49,200.49a12,12,0,0,1-17-17L163,76H88a12,12,0,0,1,0-24H192A12,12,0,0,1,204,64Z",
