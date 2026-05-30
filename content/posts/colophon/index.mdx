@@ -1,5 +1,5 @@
 ---
-title: "How I Built This Site"
+title: "Behind This Site"
 lede: "TBD"
 date: 2026-05-29
 maxTocLevel: 2
@@ -9,14 +9,30 @@ unlisted: false
 
 ## Design
 
-The design of this website is inspired by [Gabriel Sha's](https://gsha22.github.io/), [Ben Cuan's](https://bencuan.me/), [Nikhil Jha's](https://nikhiljha.com/), and [Oliver Ni's](https://oliver.ni/) websites.
+The design of this website is inspired by [Gabriel Sha's](https://gsha22.github.io/), [Ben Cuan's](https://bencuan.me/), [Nikhil Jha's](https://nikhiljha.com/), and [Oliver Ni's](https://oliver.ni/) websites. It is typeset in [Nunito Sans](https://fonts.google.com/specimen/Nunito+Sans) and `code` is in [Inconsolata](https://fonts.google.com/specimen/Inconsolata?preview.script=Latn). The icons are [Phosphor Icons](https://phosphoricons.com/).
 
-It is typeset in [Nunito Sans](https://fonts.google.com/specimen/Nunito+Sans) and code is in [Inconsolata](https://fonts.google.com/specimen/Inconsolata?preview.script=Latn).
+## Tech
 
-The icons are [Phosphor Icons](https://phosphoricons.com/).
+It's a Next.js and React site written in TypeScript that is statically exported and served via GitHub Pages. It auto-deploys on every push to `main`. The source code can be found [here](https://github.com/marcusalenius/personal-website-2026).
 
-## Technology Stack
+The content lives in a `content/` directory and is processed by [Velite](https://velite.js.org/), a tool that turns content files into typed, validated data collections. The entries on the `/work` page live in `content/work/*.yml` which get compiled into a JSON dataset by Velite at build time, and the page component imports that data, sorts it, and renders it.
 
-It's a Next.js and React site written in TypeScript that is statically exported and served via GitHub Pages. The source code can be found [here](https://github.com/marcusalenius/personal-website-2026).
+Posts are written in MDX (an extension of Markdown that allows me to add custom react components into the markup). To create a new post, I add the directory `content/posts/[slug]` with an `index.mdx` file, and optionally a `media/` subdirectory with any media for the post. The MDX file has frontmatter and Markdown body:
 
+```md
+---
+title: "Behind This Site"
+lede: "TBD"
+date: 2026-05-29
+maxTocLevel: 2
+slug: colophon
+unlisted: false
+---
+
+## Design
+
+...
+```
+
+The `maxTocLevel` attribute specifies what level of headings should be included in the table of contents, and `unlisted` specifies whether the post should be listed on the `\posts` page and be included in the sitemap. I set `unlisted: true` for work-in-progress posts.
 
