@@ -114,7 +114,7 @@ export function TableOfContents({ maxLevel }: { maxLevel: number }) {
             className={`toc-link toc-top-link${activeId === "top" ? " toc-link-active" : ""}`}
           >
             <ArrowUpIcon size={10} className="toc-top-arrow" />
-            Top
+            top
           </a>
         </li>
         {items.map((h) => (
