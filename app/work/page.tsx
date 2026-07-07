@@ -8,7 +8,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Marcus’s work",
   description:
-    "Where I’ve worked — software engineering at AWS, NLP and HCI research at Carnegie Mellon, and teaching computer science as a Head TA.",
+    "Where I’ve worked — a timeline of my roles in software engineering, research, and teaching.",
   path: "/work",
 });
 
