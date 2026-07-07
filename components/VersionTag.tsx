@@ -10,9 +10,7 @@ export function VersionTag() {
   const sha = process.env.NEXT_PUBLIC_COMMIT_SHA;
   const date = process.env.NEXT_PUBLIC_COMMIT_DATE;
 
-  const href = sha
-    ? `https://github.com/${REPO}/commit/${sha}`
-    : `https://github.com/${REPO}`;
+  const href = `https://github.com/${REPO}/tree/main`;
 
   const label = sha && date ? `${sha} (${date})` : `DEV (${devDate})`;
 
