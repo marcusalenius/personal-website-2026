@@ -36,7 +36,7 @@ jobs:
       - name: Build (Velite + Next static export)
         run: |
           export NEXT_PUBLIC_COMMIT_SHA="$(git rev-parse --short HEAD)"
-          export NEXT_PUBLIC_COMMIT_DATE="$(git log -1 --format=%cd --date=format:%Y.%m.%d)"
+          export NEXT_PUBLIC_COMMIT_DATE="$(git log -1 --format=%cd --date=format:%Y-%m-%d)"
           npm run build
 
       - name: Upload Pages artifact
