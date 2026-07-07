@@ -25,21 +25,37 @@ export function Video({
     );
   }, []);
 
-  // Only fetch/decode a clip while it's near the viewport, and pause it once
-  // it scrolls away — so at most one or two of the post's videos are ever active.
+  // Start fetching/decoding the clip a bit before it reaches the viewport so it's
+  // ready to play the moment it's actually visible — keeps at most one or two of
+  // the post's videos active.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setLoad(true);
+      },
+      { rootMargin: "200px 0px", threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Play only while the clip truly overlaps the viewport; pause + reset when it
+  // scrolls away so it restarts from the beginning on re-entry.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
-          setLoad(true);
           if (!reducedMotion) el.play().catch(() => {});
         } else {
           el.pause();
+          el.currentTime = 0;
         }
       },
-      { rootMargin: "200px 0px", threshold: 0.1 },
+      { threshold: 0.1 },
     );
     observer.observe(el);
     return () => observer.disconnect();
