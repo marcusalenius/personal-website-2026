@@ -1,11 +1,10 @@
 name: Deploy to GitHub Pages
 
-# Manual-only for now. Re-enable push-to-main once GitHub Pages is configured
-# (Settings -> Pages -> Source = GitHub Actions) by uncommenting the push trigger.
+# Deploys on every push to main; can also be run manually from the Actions tab.
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
+  push:
+    branches: [main]
 
 # Allow GITHUB_TOKEN to deploy to Pages and authenticate via OIDC.
 permissions:
