@@ -9,7 +9,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Marcus’s posts",
   description:
-    "I love explaining what I’ve learned — and what I’m still figuring out. Essays on AI, computer systems, and teaching.",
+    "I love explaining what I’ve learned — and what I’m still figuring out. Writing on whatever I happen to be thinking about.",
   path: "/posts",
 });
 
