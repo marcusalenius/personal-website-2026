@@ -60,7 +60,7 @@ function firstParagraph(content: string): string {
       .trim()
       .split(/\n\s*\n/)
       .map((b) => b.trim())
-      .find((b) => b && !/^[#<]|^import\s/.test(b)) ?? "";
+      .find((b) => b && !/^[#<{]|^import\s/.test(b)) ?? "";
   return block
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1") // [text](url) -> text
     .replace(/[*_`]/g, "") // strip emphasis/code markers
