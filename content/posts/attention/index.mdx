@@ -38,7 +38,7 @@ We can now see that the problem has reduced to making the context vector for "a"
 
 ## An Initial Idea
 
-Our first idea may be to represent "a" with some fixed vector. We will call this the embedding of "a". Then, we learn the matrix weights so that the row for “time” becomes as similar as possible to the embedding of “a”. There is an issue with this approach though: we only look at the word "a" to determine the next word. So if we were able to train the model to output "time" given the embedding of "a", it would correctly complete the phrase "once upon a time", but it would incorrectly complete a phrase like "the sun is a star" and instead output "the sun is a time". 
+Our first idea may be to represent "a" with some fixed vector. We will call this the embedding of "a". Then, we learn the weight matrix so that the row for “time” becomes as similar as possible to the embedding of “a”. There is an issue with this approach though: we only look at the word "a" to determine the next word. So if we were able to train the model to output "time" given the embedding of "a", it would correctly complete the phrase "once upon a time", but it would incorrectly complete a phrase like "the sun is a star" and instead output "the sun is a time". 
 
 We would like to consider all the words that came before it. So instead of using just the embedding of "a", we could define its context vector as the average of the embeddings of "once", "upon", and "a". That way, when we feed the context vector into our classifier, it has baked in information about all preceding words. 
 
