@@ -4,7 +4,6 @@ import { Caption } from "@/components/Caption";
 import { Figure } from "@/components/Figure";
 import { Image } from "@/components/Image";
 import { Video } from "@/components/Video";
-import { VersionTag } from "@/components/VersionTag";
 
 export const mdxComponents = {
   a: MDLink,
@@ -13,5 +12,4 @@ export const mdxComponents = {
   Figure,
   Image,
   Video,
-  VersionTag,
 } as const;

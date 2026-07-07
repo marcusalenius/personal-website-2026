@@ -15,7 +15,7 @@ export function VersionTag() {
   const label = sha && date ? `${sha} (${date})` : `DEV (${devDate})`;
 
   return (
-    <p className="text-[13px]">
+    <p className="font-mono">
       <a
         href={href}
         className="font-semibold text-muted no-underline transition-colors hover:text-muted-strong"
@@ -23,7 +23,7 @@ export function VersionTag() {
         rel="noopener noreferrer"
       >
         {label}
-        <ArrowUpRightIcon size={8} className="md-link-arrow version-tag-arrow" />
+        <ArrowUpRightIcon size={10} className="md-link-arrow" />
       </a>
     </p>
   );

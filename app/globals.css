@@ -260,13 +260,6 @@ body {
   vertical-align: baseline;
 }
 
-/* Version tag uses smaller (13px) text, so its arrow is scaled down to match. */
-.version-tag-arrow {
-  width: 8px;
-  height: 8px;
-  margin-left: 4px;
-}
-
 /* Article body — rendered MDX prose. */
 .article-body {
   position: relative;
